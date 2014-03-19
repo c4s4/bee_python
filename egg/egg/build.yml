@@ -1,0 +1,30 @@
+# Build information
+- build:       <%= name %>
+  default:     egg
+  description: Build project <%= name.capitalize %>
+  extends:     ":python:python.yml"
+
+# Build properties
+- properties:
+    name:         "<%= name %>"
+    version:      "0.1.0"
+    description:  ""
+    author:       ""
+    email:        ""
+    url:          ""
+    pkg:          "<%= name.downcase %>"
+    egg_info_dir: "egg.egg-info"
+    py_src_dir:   :pkg
+
+# Build targets
+- target:      egg
+  depends:     [py_clean, py_check, py_test]
+  description: Generate distribution archive
+  script:
+  - erb:
+      src:  "setup.erb"
+      dest: "setup.py"
+  - mkdir: :py_build_dir
+  - rmdir: :egg_info_dir
+  - "python setup.py sdist -d #{py_build_dir}"
+  - rmdir: :egg_info_dir

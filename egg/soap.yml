@@ -1,0 +1,61 @@
+- build:       soap
+  default:     all
+  description: "Generate a Python SOAP server project"
+
+- properties:
+    name: soap
+    description: |
+      This script will create a template project for a Python SOAP server and
+      a sample client. Generated build file provides targets 'check' to check
+      Python scripts syntax, 'run' to start the server, 'zip' to create
+      distribution archive and 'clean' to delete generated files. You must
+      install SOAPpy, pconst and PyXML to run this script.
+
+- target: welcome
+  description: "Print information message"
+  script:
+  - print: :description
+
+- target: prompt
+  depends: welcome
+  description: "Prompt for project information"
+  script:
+  - print: "Please answer following questions to generate the project:"
+  - prompt:
+      message: "What is the project's name?"
+      default: :name
+      property: name
+
+- target: generate
+  depends: prompt
+  description: "Generate project"
+  script:
+  - print: "Generating project..."
+  - rb: |
+      error "A directory named '#{name}' already exists, aborting" if
+        File.exists?("#{here}/#{name}")
+  - mkdir: "#{here}/#{name}"
+  - erb:
+      src: "#{base}/soap/build.erb"
+      dest: "#{here}/#{name}/build.yml"
+  - cp:
+      src: "#{base}/soap/server.py"
+      dest: "#{here}/#{name}/server.py"
+  - cp:
+      src: "#{base}/soap/client.py"
+      dest: "#{here}/#{name}/client.py"
+  - cp:
+      src: "#{base}/soap/pylint.cfg"
+      dest: "#{here}/#{name}/pylint.cfg"
+
+- target: customization
+  depends: generate
+  description: "Print information about project customization"
+  script:
+  - print: |
+      Project has been generated in directory '#{name}'. Type 'bee -b' in
+      the project directory to print information about generated build file.
+      Enjoy!
+
+- target: all
+  depends: [welcome, prompt, generate, customization]

@@ -1,0 +1,19 @@
+# Build information
+- build:       <%= name %>
+  description: Build project <%= name.capitalize %>
+  extends:     ":python:python.yml"
+  alias:
+    test: ~
+
+# Build properties
+- properties:
+    name:       "<%= name %>"
+    py_src_dir: "."
+    py_main:    "server.py"
+    client:     "client.py"
+
+# Build targets
+- target:      client
+  description: Run test client
+  script:
+  - python.python: :client

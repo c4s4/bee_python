@@ -1,0 +1,104 @@
+- release:     0.2.3
+  date:        2014-02-17
+  description: "Minor fixes"
+  fixed:
+  - "Task python.coverage fixed for latest coverage.py release."
+  - "Don't clean env directory."
+  added:
+  - "Pylint configuration file location defaults to '~/.bee/pylint.cfg'."
+
+- release:     0.2.2
+  date:        2013-10-15
+  description: "Improved python.python"
+  added:
+  - "python.python added two new arguments: args (for command line arguments)
+     and lenient (so that running script doesn't fail even if it doesn't
+     return 0)."
+  - "Added 'check' alias in Python parent build file to check Python source
+     files."
+
+- release:     0.2.1
+  date:        2013-09-12
+  description: "Removed py_inst_deps"
+  removed:
+  - "Removed target to install dependencies py_inst_deps (too dangerous)."
+
+- release:     0.2.0
+  date:        2013-09-11
+  description: "Added requirements task"
+  added:
+  - "Added requirements task that is like dependencies but uses a PIP
+     requirements file."
+
+- release:     0.1.3
+  date:        2013-09-07
+  description: "Fixed list merge in properties"
+  fixed:
+  - "Fixed list merge for properties py_chk_path, py_chk_src and py_doc_src."
+
+- release:     0.1.2
+  date:        2012-12-04
+  description: "Fixed dependency management"
+  fixed:
+  - "Fixed a bug in 'dependencies' task."
+
+- release:     0.1.1
+  date:        2012-12-04
+  description: "Fixed dependency management"
+  fixed:
+  - "Fixed 'dependencies' task so that it doesn't print a stack trace when
+     a dependency is missing."
+
+- release:     0.1.0
+  date:        2012-12-04
+  description: "Added dependency management"
+  added:
+  - "New task 'dependencies' to check installed Python dependencies."
+  - "New targets 'py_deps' (to check dependencies) and 'py_inst_deps' (to
+     install dependencies) in parent Python build file."
+
+- release:     0.0.6
+  date:        2012-10-04
+  description: "Fixed templates"
+  added:
+  - "Target to test all templates (named 'test_templates')."
+  fixed:
+  - "Fixed 'doc' alias so that it doesn't run 'py_cover' target."
+
+- release:     0.0.5
+  date:        2012-06-02
+  description: "Bug fix release"
+  fixed:
+  - "Fixed templates."
+
+- release:     0.0.4
+  date:        2012-06-02
+  description: "Bug fix release"
+  added:
+  - "Parent build file ':python:python.yml'."
+  - "Targets alias list."
+  fixed:
+  - "Parent build file python.yml doesn't extend bee:clean.yml anymore."
+  - "Renamed build_dir in python.yml parent build file to py_build_dir."
+  removed:
+  - "Tools are no embedded anymore. It is highly recommanded to install them
+     using PIP."
+
+- release:     0.0.3
+  date:        2011-02-17
+  description: "Release for latest Bee version (0.11.0)"
+  fixed:
+  - "Tasks are compatible with latest Bee version (release 0.11.0)."
+  - "Improved test coverage (for both tasks and templates)."
+
+- release:     0.0.2
+  date:        2010-11-04
+  description: "Bugfix release"
+  fixed:
+  - "Link to GemCutter in the documentation."
+  - "Fixed verbose mode printing executed commands."
+
+- release:     0.0.1
+  date:        2010-10-11
+  description: "First public release"
+

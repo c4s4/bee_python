@@ -1,0 +1,11 @@
+from ez_setup import use_setuptools
+use_setuptools()
+from setuptools import setup, find_packages
+
+setup(name="<%= name %>",
+      version="<%= version %>",
+      description="<%= description %>",
+      author="<%= author %>",
+      author_email="<%= email %>",
+      url="<%= url %>",
+      packages=find_packages(exclude='<%= py_test_dir %>'))

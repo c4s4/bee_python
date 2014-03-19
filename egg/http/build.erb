@@ -1,0 +1,16 @@
+# Build information
+- build:       <%= name %>
+  description: Build project <%= name.capitalize %>
+  extends:     ":python:python.yml"
+
+# Build properties
+- properties:
+    name:   <%= name %>
+
+- target:      client
+  description: Perform a client call
+  script:
+  - http_get:
+      url:  http://localhost:8000
+      prop: body
+  - print: :body

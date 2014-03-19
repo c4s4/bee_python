@@ -1,0 +1,167 @@
+# Build information
+- build:       python
+  description: Parent build file for Python projects
+  abstract:    true
+  default: [clean, test]
+  alias:
+    clean: py_clean
+    test:  [py_deps, py_check, py_test]
+    check: py_check
+    run:   py_run
+    doc:   py_doc
+
+# Build properties
+- properties:
+    # Directory where live generated files
+    py_build_dir:   "build"
+    # Python source directory
+    py_src_dir:     "src"
+    # Python test directory
+    py_test_dir:    "test"
+    # Python test source files
+    py_test_files:  "test_*.py"
+    # Python version (regular expression, such as "^2\.[67]" to accept Python 
+    # 2.6 and 2.7, not checked if property not set)
+    py_version:     ~
+    # list of directories with Python source files to check
+    py_chk_src:     ["src", "test"]
+    # list of Python files to check
+    py_chk_files:   ""
+    # directories to include in Python path while checking
+    py_chk_path:    ["src", "test"]
+    # tells if Python source check is lenient
+    py_chk_len:     false
+    # Pylint options
+    py_chk_opt:     "--generated-members=objects"
+    # Pylint configuration file
+    py_chk_cfg:     "#{File.expand_path('~/.bee/pylint.cfg')}"
+    # list of directories with Python source files to document
+    py_doc_src:     ["src", "test"]
+    # directory where to generate source documentation
+    py_doc_dir:     "#{py_build_dir}/epydoc"
+    # Python documentation option
+    py_doc_opt:     "-v"
+    # Directory where to generate Python coverage report
+    py_cov_dir:     "#{py_build_dir}/coverage"
+    # List of file patterns to include in report
+    py_cov_inc:     ["*.py"]
+    # Coverage data file (connot be specified in latest coverage versions)
+    #py_cov_data:    "#{py_build_dir}/.coverage"
+    py_cov_data:    ~
+    # main scrip to run
+    py_main:        "#{py_src_dir}/#{name}.py"
+    # main script arguments as a list
+    py_main_args:   []
+    # tells if the main script is lenient (doesn't stop on error if return
+    # code is different from 0, the dfault)
+    py_main_len:    false
+    # dependencies as a map, for instance:
+    #
+    # py_deps:
+    #   Django: "1.2.3"
+    #   PyYAML: ~
+    #
+    # Set a version to ~ (or null) to indicate that no specific version is needed.
+    # Set dependencies to ~ if you don't want any check (default).
+    py_deps: ~
+    # dependencies as a requirements file:
+    # py_reqs: 'requirements.txt'
+    py_reqs: ~
+    # directories to clean
+    py_clean_dirs:  [:py_build_dir]
+    # files to clean
+    py_clean_files:
+    - "**/*.pyc"
+    - "**/*.pyo"
+    # files to exlude
+    py_clean_excl:
+    - "env/**/*"
+
+# Build targets
+- target:      py_version
+  description: Check Python version (if property 'py_version' is defined)
+  script:
+  - if: "defined?(py_version)"
+    then:
+    - print: "Checking python version..."
+    - if:    '!(py_version =~ /^\d+(\.\d+(\.\d+)?)?$/)'
+      then:
+      - throw: "Python version must be of the form 'x' or 'x.y' or 'x.y.z'"
+    - if:    '!(`python -V 2>&1`.strip =~ /^Python #{py_version}(\.\d+)*/)'
+      then:
+      - throw: "Python must be in version '#{py_version}'"
+      else:
+      - print: "Python '#{py_version}' OK"
+    else:
+    - print: "Python version not checked"
+
+- target:      py_check
+  depends:     py_version
+  description: Check Python source syntax (pylint must have been installed with
+               'pip install pylint')
+  script:
+  - python.pylint:
+      src:     :py_chk_src
+      files:   :py_chk_files
+      path:    :py_chk_path
+      config:  :py_chk_cfg
+      lenient: :py_chk_len
+      options: :py_chk_opt
+
+- target:      py_test
+  description: Run unit tests
+  script:
+  - python.test: "#{py_test_dir}/#{py_test_files}"
+
+- target:      py_doc
+  description: Generate documentation for Python source code (epydoc must have 
+               been installed with 'pip install epydoc')
+  script:
+  - rmrf:  :py_doc_dir
+  - mkdir: :py_doc_dir
+  - python.epydoc:
+      src:     :py_doc_src
+      dest:    :py_doc_dir
+      options: :py_doc_opt
+
+- target:      py_cover
+  description: Generate coverage report on Python code (coverage must have been
+               installed with 'pip install coverage')
+  script:
+  - rmrf:  :py_cov_dir
+  - mkdir: :py_cov_dir
+  - python.coverage:
+      src:  :py_src_dir
+      test: "#{py_test_dir}/#{py_test_files}"
+      dir:  :py_test_dir
+      data: "#{defined?(py_cov_data) ? py_cov_data : ''}"
+      dest: :py_cov_dir
+
+- target:      py_run
+  description: Run Python script
+  script:
+  - python.python:
+      source:  :py_main
+      args:    :py_main_args
+      lenient: :py_main_len
+
+- target:      py_clean
+  description: Clean generated files
+  script:
+  - rmdir: :py_clean_dirs
+  - find:
+      root: :base
+      includes: :py_clean_files
+      excludes: :py_clean_excl
+      property: _clean_files
+  - rm:    :_clean_files
+
+- target:      py_deps
+  description: Check Python dependencies using PIP
+  script:
+  - if: defined?(py_deps) and py_deps
+    then:
+    - python.dependencies: :py_deps
+  - if: defined?(py_reqs) and py_reqs
+    then:
+    - python.requirements: :py_reqs

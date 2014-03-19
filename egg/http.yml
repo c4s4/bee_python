@@ -1,0 +1,54 @@
+- build:       http
+  default:     all
+  description: Generate a Python server project
+
+- properties:
+    name:        http
+    description: This script will create an empty http Python server project.
+
+- target:      prompt
+  description: Prompt for project information
+  script:
+  - print: :description
+  - prompt:
+      message:  "What is the project's name?"
+      default:  :name
+      property: name
+
+- target:      generate
+  description: Generate project
+  script:
+  - print: "Generating project..."
+  - rb: |
+      error "A directory named '#{name}' already exists, aborting" if
+        File.exists?("#{here}/#{name}")
+  - mkdir: "#{here}/#{name}"
+  - mkdir: "#{here}/#{name}/src"
+  - mkdir: "#{here}/#{name}/test"
+  - erb:
+      src:  "#{base}/http/build.erb"
+      dest: "#{here}/#{name}/build.yml"
+  - cp:
+      src:  "#{base}/http/server.py"
+      dest: "#{here}/#{name}/src/#{name}.py"
+  - cp:
+      src:  "#{base}/http/pylint.cfg"
+      dest: "#{here}/#{name}/"
+  - cp:
+      src:  "#{base}/http/libhttp.py"
+      dest: "#{here}/#{name}/test"
+  - erb:
+      src:  "#{base}/http/test.erb"
+      dest: "#{here}/#{name}/test/test_#{name}.py"
+
+- target:      enjoy
+  description: Print enjoy message
+  script:
+  - print: |
+      Project has been generated in directory '#{name}'. Type 'bee -b' in
+      the project directory to print information about available targets.
+      Enjoy!
+
+- target: all
+  depends: [prompt, generate, enjoy]
+

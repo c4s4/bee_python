@@ -1,0 +1,51 @@
+- build:       project
+  default:     all
+  description: Generate a Python project
+
+- properties:
+    name:        project
+    description: This script will create an empty Python project.
+
+- target:      prompt
+  description: Prompt for project information
+  script:
+  - print: :description
+  - prompt:
+      message: "What is the project's name?"
+      default: :name
+      property: name
+
+- target:      generate
+  description: Generate project
+  script:
+  - print: "Generating project..."
+  - rb: |
+      error "A directory named '#{name}' already exists, aborting" if
+        File.exists?("#{here}/#{name}")
+  - mkdir: "#{here}/#{name}"
+  - mkdir: "#{here}/#{name}/src"
+  - mkdir: "#{here}/#{name}/test"
+  - cp:
+      src:  "#{base}/project/pylint.cfg"
+      dest: "#{here}/#{name}/pylint.cfg"
+  - erb:
+      src:  "#{base}/project/build.erb"
+      dest: "#{here}/#{name}/build.yml"
+  - erb:
+      src:  "#{base}/project/script.py"
+      dest: "#{here}/#{name}/src/#{name}.py"
+  - erb:
+      src:  "#{base}/project/test.py"
+      dest: "#{here}/#{name}/test/test_#{name}.py"
+
+- target:      enjoy
+  description: Print enjoy message
+  script:
+  - print: |
+      Project has been generated in directory '#{name}'. Type 'bee -b' in
+      the project directory to print information about available targets.
+      Enjoy!
+
+- target:  all
+  depends: [prompt, generate, enjoy]
+

@@ -1,0 +1,23 @@
+= Bee_python
+
+Bee package to manage Python projects
+
+= Home Page
+
+This software is hosted on RubyForge (thanks to them for their great job!)
+at http://bee.rubyforge.org.
+
+= Documentation
+
+For more information about this software, please read the documentation
+in  "bee_python" section on Gem server (type "gem_server" and go at URL
+http://localhost:8808) if you installed it using Gem.
+
+= License
+
+bee is Open Source and released under the Apache License (see LICENE file
+or go to URL http://www.apache.org/licenses/LICENSE-2.0).
+
+= Copyright
+
+Bee_python version 0.2.3 (C) Michel Casabianca - 2008-2010

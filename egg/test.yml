@@ -1,0 +1,44 @@
+- build: 
+  default: all
+  description: "Generate a Python unit test source file"
+
+- properties:
+    name: test.py
+    description: |
+      This script will create a template Python unit test source file.
+
+- target: welcome
+  description: "Print information message"
+  script:
+  - print: :description
+
+- target: prompt
+  depends: welcome
+  description: "Prompt for project information"
+  script:
+  - print: "Please answer following questions to generate the project:"
+  - prompt:
+      message: "What is the unit test source file name?"
+      default: :name
+      property: name
+
+- target: generate
+  depends: prompt
+  description: "Generate source"
+  script:
+  - print: "Generating source..."
+  - rb: |
+      error "A file named '#{name}' already exists, aborting" if
+        File.exists?("#{here}/#{name}")
+  - cp: { src: "#{base}/test/test.py", dest: "#{here}/#{name}" }
+
+- target: customization
+  depends: generate
+  description: "Print information about project customization"
+  script:
+  - print: |
+      Source file has been generated in file '#{name}'.
+      Enjoy!
+
+- target: all
+  depends: [welcome, prompt, generate, customization]
